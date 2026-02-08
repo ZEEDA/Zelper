@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import CheckInButton from '../components/work/CheckInButton';
 import DailyTimeline from '../components/work/DailyTimeline';
 import TaskManager from '../components/work/TaskManager';
@@ -7,14 +7,19 @@ import Modal from '../components/common/Modal';
 import { useWorkStore } from '../stores/workStore';
 import { useTasksStore } from '../stores/tasksStore';
 
-export default function WorkPage() {
-    const { fetchTodaySession, checkOut, status } = useWorkStore();
-    const { fetchTasks } = useTasksStore();
+export default function WorkTodayPage() {
+    const fetchTodaySession = useWorkStore((state) => state.fetchTodaySession);
+    const checkOut = useWorkStore((state) => state.checkOut);
+    const status = useWorkStore((state) => state.status);
+    const fetchTasks = useTasksStore((state) => state.fetchTasks);
     const [isSummaryOpen, setIsSummaryOpen] = useState(false);
 
     useEffect(() => {
         fetchTodaySession();
         fetchTasks();
+
+        return () => {
+        };
     }, [fetchTodaySession, fetchTasks]);
 
     const handleCheckOutClick = () => {

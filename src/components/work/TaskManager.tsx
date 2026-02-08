@@ -1,23 +1,14 @@
 import { useState } from 'react';
 import { useTasksStore } from '../../stores/tasksStore';
 import Button from '../common/Button';
-import Input from '../common/Input';
+import Modal from '../common/Modal';
 import { Play, Pause, Check, Trash2, Plus } from 'lucide-react';
 import { formatDuration } from '../../utils/dateTime';
+import AddTaskForm from './AddTaskForm';
 
 export default function TaskManager() {
-    const { tasks, addTask, toggleComplete, startTimer, stopTimer, deleteTask, activeTaskId, isLoading } = useTasksStore();
-    const [newTaskTitle, setNewTaskTitle] = useState('');
-    const [newTaskEstimate, setNewTaskEstimate] = useState('');
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newTaskTitle.trim()) return;
-
-        await addTask(newTaskTitle, newTaskEstimate ? parseInt(newTaskEstimate) : undefined);
-        setNewTaskTitle('');
-        setNewTaskEstimate('');
-    };
+    const { tasks, toggleComplete, startTimer, stopTimer, deleteTask, activeTaskId } = useTasksStore();
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     console.log('Tasks:', tasks);
 
@@ -33,26 +24,24 @@ export default function TaskManager() {
 
     return (
         <div className="w-full space-y-6">
-            <h3 className="text-lg font-bold text-gray-900">Tasks</h3>
-
-            <form onSubmit={handleSubmit} className="flex gap-2 items-start">
-                <Input
-                    placeholder="What are you working on?"
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    className="flex-1"
-                />
-                <Input
-                    type="number"
-                    placeholder="Min"
-                    className="w-20"
-                    value={newTaskEstimate}
-                    onChange={(e) => setNewTaskEstimate(e.target.value)}
-                />
-                <Button type="submit" size="md" icon={<Plus size={20} />} disabled={isLoading}>
-                    Add
+            <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-gray-900">Tasks</h3>
+                <Button
+                    onClick={() => setIsAddModalOpen(true)}
+                    icon={<Plus size={16} />}
+                    size="sm"
+                >
+                    Add Task
                 </Button>
-            </form>
+            </div>
+
+            <Modal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                title="Add New Task"
+            >
+                <AddTaskForm onTaskAdded={() => setIsAddModalOpen(false)} />
+            </Modal>
 
             <div className="space-y-2">
                 {sortedTasks.map(task => (
@@ -75,10 +64,12 @@ export default function TaskManager() {
                                     {task.title}
                                 </span>
                                 <div className="flex items-center gap-2 text-xs text-gray-500">
-                                    {task.estimated_minutes && <span>Est: {formatDuration(task.estimated_minutes)}</span>}
-                                    {task.actual_minutes > 0 && (
+                                    {task.estimatedMinutes && (
+                                        <span>{formatDuration(task.estimatedMinutes)}</span>
+                                    )}
+                                    {task.actualMinutes > 0 && (
                                         <span className={activeTaskId === task.id ? 'text-primary font-bold' : ''}>
-                                            Actual: {formatDuration(task.actual_minutes)}
+                                            Actual: {formatDuration(task.actualMinutes)}
                                         </span>
                                     )}
                                 </div>

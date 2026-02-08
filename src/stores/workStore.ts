@@ -3,21 +3,24 @@ import api from '../utils/api';
 
 export interface WorkSession {
     id: number;
-    user_id: number;
-    check_in_time: string;
-    check_out_time?: string;
+    userId: number;
+    checkInTime: string;
+    checkOutTime?: string;
     status: 'checked_in' | 'on_break' | 'checked_out';
-    total_work_minutes: number;
-    total_break_minutes: number;
-    timeline_json?: string;
+    totalWorkMinutes: number;
+    totalBreakMinutes: number;
+    lastBreakStartTime?: string;
+    timelineJson?: string;
 }
 
 interface WorkState {
     currentSession: WorkSession | null;
+    historySessions: WorkSession[];
     status: 'checked_in' | 'on_break' | 'checked_out';
     isLoading: boolean;
     error: string | null;
 
+    fetchHistorySessions: () => Promise<void>;
     fetchTodaySession: () => Promise<void>;
     checkIn: () => Promise<void>;
     checkOut: () => Promise<void>;
@@ -27,9 +30,22 @@ interface WorkState {
 
 export const useWorkStore = create<WorkState>((set, get) => ({
     currentSession: null,
+    historySessions: [],
     status: 'checked_out',
     isLoading: false,
     error: null,
+
+    fetchHistorySessions: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await api.get('/work/sessions');
+            set({ historySessions: response.data.sessions });
+        } catch (error: any) {
+            set({ error: error.message || 'Failed to fetch history' });
+        } finally {
+            set({ isLoading: false });
+        }
+    },
 
     fetchTodaySession: async () => {
         set({ isLoading: true, error: null });
@@ -37,9 +53,10 @@ export const useWorkStore = create<WorkState>((set, get) => ({
             const response = await api.get('/work/today');
             if (response.data) {
                 set({
-                    currentSession: response.data,
-                    status: response.data.status,
+                    currentSession: response.data.data,
+                    status: response.data.data.status,
                 });
+
             } else {
                 set({ currentSession: null, status: 'checked_out' });
             }
@@ -61,7 +78,7 @@ export const useWorkStore = create<WorkState>((set, get) => ({
         try {
             const response = await api.post('/work/check-in');
             set({
-                currentSession: response.data,
+                currentSession: response.data.data,
                 status: 'checked_in',
             });
         } catch (error: any) {
@@ -74,12 +91,16 @@ export const useWorkStore = create<WorkState>((set, get) => ({
     checkOut: async () => {
         const { currentSession } = get();
         if (!currentSession) return;
+        console.log('=> CurrentSession: ', currentSession);
 
         set({ isLoading: true, error: null });
         try {
-            const response = await api.put(`/work/check-out/${currentSession.id}`);
+            const response = await api.put(`/work/check-out/${currentSession.id}`, {
+                totalWorkMinutes: currentSession.totalWorkMinutes,
+                totalBreakMinutes: currentSession.totalBreakMinutes,
+            });
             set({
-                currentSession: response.data,
+                currentSession: response.data.data,
                 status: 'checked_out',
             });
         } catch (error: any) {
@@ -95,9 +116,9 @@ export const useWorkStore = create<WorkState>((set, get) => ({
 
         set({ isLoading: true, error: null });
         try {
-            const response = await api.put(`/work/break/${currentSession.id}`, { action: 'start' });
+            const response = await api.put(`/work/break/${currentSession.id}`, { status: 'start' });
             set({
-                currentSession: response.data,
+                currentSession: response.data.data,
                 status: 'on_break',
             });
         } catch (error: any) {
@@ -113,9 +134,9 @@ export const useWorkStore = create<WorkState>((set, get) => ({
 
         set({ isLoading: true, error: null });
         try {
-            const response = await api.put(`/work/break/${currentSession.id}`, { action: 'end' });
+            const response = await api.put(`/work/break/${currentSession.id}`, { status: 'end' });
             set({
-                currentSession: response.data,
+                currentSession: response.data.data,
                 status: 'checked_in',
             });
         } catch (error: any) {

@@ -23,9 +23,9 @@ export default function DailyTimeline() {
     // For now, static representation of start time.
 
     return (
-        <div className="relative pl-4 border-l-2 border-gray-100 space-y-8 my-6">
+        <div className="relative pl-6 border-l-2 border-gray-100 space-y-8 my-6">
             <div className="relative">
-                <div className="absolute -left-[21px] bg-green-100 p-1 rounded-full border-2 border-white">
+                <div className="absolute -left-[38px] bg-green-100 p-1 rounded-full border-2 border-white">
                     <Clock size={16} className="text-green-600" />
                 </div>
                 <div className="flex flex-col">
@@ -39,7 +39,7 @@ export default function DailyTimeline() {
             {/* If we had break logs, map them here */}
             {currentSession.total_break_minutes > 0 && (
                 <div className="relative">
-                    <div className="absolute -left-[21px] bg-yellow-100 p-1 rounded-full border-2 border-white">
+                    <div className="absolute -left-[38px] bg-yellow-100 p-1 rounded-full border-2 border-white">
                         <Coffee size={16} className="text-yellow-600" />
                     </div>
                     <div className="flex flex-col">
@@ -53,7 +53,7 @@ export default function DailyTimeline() {
 
             {currentSession.check_out_time && (
                 <div className="relative">
-                    <div className="absolute -left-[21px] bg-gray-100 p-1 rounded-full border-2 border-white">
+                    <div className="absolute -left-[38px] bg-gray-100 p-1 rounded-full border-2 border-white">
                         <LogOut size={16} className="text-gray-600" />
                     </div>
                     <div className="flex flex-col">
@@ -67,7 +67,7 @@ export default function DailyTimeline() {
 
             {!currentSession.check_out_time && (
                 <div className="relative">
-                    <div className="absolute -left-[9px] w-3 h-3 bg-primary rounded-full ring-4 ring-primary/20 animate-pulse"></div>
+                    <div className="absolute -left-[30px] w-3 h-3 bg-primary rounded-full ring-4 ring-primary/20 animate-pulse"></div>
                     <div className="ml-2 text-primary text-sm font-medium">Currently Working</div>
                 </div>
             )}

@@ -3,15 +3,15 @@ import api from '../utils/api';
 
 export interface Task {
     id: number;
-    user_id: number;
-    work_session_id?: number | null;
+    userId: number;
+    workSessionId?: number | null;
     title: string;
-    estimated_minutes?: number | null;
-    actual_minutes: number;
+    estimatedMinutes?: number | null;
+    actualMinutes: number;
     completed: boolean;
-    started_at?: string | null;
-    completed_at?: string | null;
-    created_at: string;
+    startedAt?: string | null;
+    completedAt?: string | null;
+    createdAt: string;
 }
 
 interface TasksState {
@@ -21,7 +21,7 @@ interface TasksState {
     error: string | null;
 
     fetchTasks: () => Promise<void>;
-    addTask: (title: string, estimatedMinutes?: number) => Promise<void>;
+    addTask: (title: string, estimatedMinutes?: number, workSessionId?: number) => Promise<void>;
     updateTask: (id: number, updates: Partial<Task>) => Promise<void>;
     deleteTask: (id: number) => Promise<void>;
     toggleComplete: (id: number, completed: boolean) => Promise<void>;
@@ -47,10 +47,10 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         }
     },
 
-    addTask: async (title, estimatedMinutes) => {
+    addTask: async (title, estimatedMinutes, workSessionId) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await api.post('/tasks', { title, estimated_minutes: estimatedMinutes });
+            const response = await api.post('/tasks', { title, estimatedMinutes, workSessionId });
             set((state) => ({ tasks: [response.data.task, ...state.tasks] }));
         } catch (error: any) {
             set({ error: error.message || 'Failed to add task' });
@@ -106,7 +106,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         try {
             // Stop any other running timer first? Backend might handle this or frontend logic needed
             // For now, assuming backend handles logic of "one task at a time" if needed
-            const response = await api.put(`/tasks/${id}/timer`, { action: 'start' });
+            const response = await api.put(`/tasks/${id}/timer`, { status: 'start' });
             set((state) => ({
                 activeTaskId: id,
                 tasks: state.tasks.map(t => t.id === id ? response.data.task : t)
@@ -121,7 +121,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     stopTimer: async (id) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await api.put(`/tasks/${id}/timer`, { action: 'stop' });
+            const response = await api.put(`/tasks/${id}/timer`, { status: 'stop' });
             set((state) => ({
                 activeTaskId: null,
                 tasks: state.tasks.map(t => t.id === id ? response.data.task : t)

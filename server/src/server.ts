@@ -1,16 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { initializeDatabase } from './db.js';
 import { authenticateToken } from './middleware/auth.js';
 import { enforceRLS } from './middleware/rls.js';
 
-// Import routes
-import authRoutes from './routes/auth.js';
-import workRoutes from './routes/work.js';
-import tasksRoutes from './routes/tasks.js';
-import booksRoutes from './routes/books.js';
-import expensesRoutes from './routes/expenses.js';
+// Import feature routes
+import authRoutes from './features/auth/auth.routes.js';
+import workRoutes from './features/work/work.routes.js';
+import tasksRoutes from './features/tasks/tasks.routes.js';
+import booksRoutes from './features/books/books.routes.js';
+import expensesRoutes from './features/expenses/expenses.routes.js';
 
 // Load environment variables
 dotenv.config();
@@ -23,7 +22,7 @@ app.use(cors());
 app.use(express.json());
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -39,24 +38,13 @@ app.use('/api/analytics', authenticateToken, enforceRLS); // TODO: implement
 app.use('/api/sync', authenticateToken, enforceRLS); // TODO: implement
 
 // Error handling middleware
-app.use((err: any, req: any, res: any, next: any) => {
+app.use((err: any, _req: any, res: any, _next: any) => {
     console.error('Error:', err);
     res.status(500).json({ error: 'Internal server error' });
 });
 
-// Initialize database and start server
-async function startServer() {
-    try {
-        await initializeDatabase();
-
-        app.listen(PORT, () => {
-            console.log(`🚀 Server running on http://localhost:${PORT}`);
-            console.log(`📊 Database: ${process.env.DATABASE_PATH || './database.sqlite'}`);
-        });
-    } catch (error) {
-        console.error('Failed to start server:', error);
-        process.exit(1);
-    }
-}
-
-startServer();
+// Start server
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📊 Database: ${process.env.DATABASE_PATH || './database.sqlite'}`);
+});

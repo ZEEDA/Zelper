@@ -14,7 +14,7 @@ export default function FeatureCard({ title, description, icon, to, color, child
     return (
         <Link
             to={to}
-            className="block h-full group bg-white rounded-2xl p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md hover:scale-[1.02]"
+            className="block h-full group bg-white rounded-2xl p-6 border border-[#e5e7eb] transition-all hover:shadow-md hover:border-transparent hover:shadow-[rgba(0,0,0,0.08)] transition-all duration-300 ease-in-out"
         >
             <div className="flex items-start justify-between mb-4">
                 <div className={`p-3 rounded-xl ${color} bg-opacity-10 text-white`}>

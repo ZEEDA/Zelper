@@ -6,7 +6,7 @@ import Modal from '../components/common/Modal';
 import ResumeModal from '../components/reading/ResumeModal';
 import PaperBookReader from '../components/reading/PaperBookReader';
 import PDFReader from '../components/reading/PDFReader';
-import FloatingActionButton from '../components/common/FloatingActionButton';
+import Button from '../components/common/Button';
 import { Plus } from 'lucide-react';
 
 export default function ReadingPage() {
@@ -44,12 +44,19 @@ export default function ReadingPage() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 animate-fade-in pb-24">
+        <div className="max-w-7xl mx-auto px-4 py-8 space-y-8 animate-fade-in pb-24">
             <header className="mb-8 flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Reading Library</h1>
                     <p className="text-gray-500">Track your reading progress.</p>
                 </div>
+                <Button
+                    onClick={() => setIsAddModalOpen(true)}
+                    icon={<Plus size={20} />}
+                    size="lg"
+                >
+                    Add Book
+                </Button>
             </header>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -74,15 +81,7 @@ export default function ReadingPage() {
                 </div>
             )}
 
-            <FloatingActionButton
-                actions={[
-                    {
-                        label: 'Add Book',
-                        icon: <Plus size={24} />,
-                        onClick: () => setIsAddModalOpen(true)
-                    }
-                ]}
-            />
+
 
             <Modal
                 isOpen={isAddModalOpen}

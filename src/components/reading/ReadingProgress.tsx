@@ -11,9 +11,10 @@ export default function ReadingProgress({
     strokeWidth = 4,
     color = 'text-primary'
 }: ReadingProgressProps) {
+    const safePercentage = isNaN(percentage) ? 0 : Math.max(0, Math.min(100, percentage));
     const radius = (size - strokeWidth) / 2;
     const circumference = radius * 2 * Math.PI;
-    const offset = circumference - (percentage / 100) * circumference;
+    const offset = circumference - (safePercentage / 100) * circumference;
 
     return (
         <div className="relative flex items-center justify-center">
@@ -48,7 +49,7 @@ export default function ReadingProgress({
                 />
             </svg>
             <span className="absolute text-xs font-bold text-gray-700">
-                {Math.round(percentage)}%
+                {Math.round(safePercentage)}%
             </span>
         </div>
     );

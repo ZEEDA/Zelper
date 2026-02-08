@@ -21,7 +21,7 @@ export default function InsightsPage() {
     }, [fetchTodaySession, fetchExpenses, fetchTasks]);
 
     // Derived stats (Current Day mainly)
-    const workMinutes = currentSession?.total_work_minutes || 0;
+    const workMinutes = currentSession?.totalWorkMinutes || 0;
     const expenseTotal = getDailyTotal();
     const completedTasks = tasks.filter(t => t.completed).length;
 

@@ -8,9 +8,18 @@ interface CheckInButtonProps {
 }
 
 export default function CheckInButton({ onCheckOut }: CheckInButtonProps) {
-    const { status, checkIn, startBreak, endBreak, isLoading } = useWorkStore();
+    const status = useWorkStore((state) => state.status);
+    const isLoading = useWorkStore((state) => state.isLoading);
+    const checkIn = useWorkStore((state) => state.checkIn);
+    const startBreak = useWorkStore((state) => state.startBreak);
+    const endBreak = useWorkStore((state) => state.endBreak);
+    const currentSession = useWorkStore((state) => state.currentSession);
 
-    if (status === 'checked_out') {
+    console.log("status", status);
+    console.log("=> CURRENT SESSION", currentSession);
+
+
+    if (status === 'checked_out' || currentSession === null) {
         return (
             <div className="flex flex-col items-center gap-4">
                 <button

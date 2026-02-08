@@ -15,7 +15,7 @@ export default function DaySummary({ onConfirm, onCancel }: DaySummaryProps) {
     if (!currentSession) return null;
 
     // Calculate session stats
-    const workTime = currentSession.total_work_minutes; // Assuming this is updated from backend
+    const workTime = currentSession.totalWorkMinutes; // Assuming this is updated from backend
     // Or calculate locally if backend hasn't updated yet? 
     // Usually on check-out confirmation we show what *will* be logged or current state.
     // Let's use currentSession data.
@@ -46,11 +46,11 @@ export default function DaySummary({ onConfirm, onCancel }: DaySummaryProps) {
             <div className="bg-gray-50 p-4 rounded-xl">
                 <div className="flex justify-between items-center text-sm mb-2">
                     <span className="text-gray-600">Break Time</span>
-                    <span className="font-medium">{formatDuration(currentSession.total_break_minutes)}</span>
+                    <span className="font-medium">{formatDuration(currentSession.totalBreakMinutes)}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-600">Session Start</span>
-                    <span className="font-medium">{new Date(currentSession.check_in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span className="font-medium">{new Date(currentSession.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                 </div>
             </div>
 
